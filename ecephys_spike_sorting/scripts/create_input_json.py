@@ -37,7 +37,7 @@ def createInputJson(output_file,
                     niStream_sync_params = 'XA=0,1,3,500',
                     toStream_path_3A = None,
                     fromStream_list_3A = None,
-                    minfr_goodchannels = 0.1,
+                    minfr_goodchannels = 0.04,
                     whiteningRange = 32,
                     CSBseed = 1,
                     LTseed = 1,
@@ -45,25 +45,32 @@ def createInputJson(output_file,
                     ):
 
     # hard coded paths to code on your computer and system
-    ecephys_directory = r'D:\ecephys_fork\ecephys_spike_sorting\ecephys_spike_sorting'
-    kilosort_repository = r'C:\Users\labadmin\Documents\jic\KS2_MP_082520\Kilosort2'
-    npy_matlab_repository = r'C:\Users\labadmin\Documents\jic\npy-matlab-master'
-    catGTPath = r'C:\Users\labadmin\Documents\jic\CatGT'
-    tPrime_path=r'C:\Users\labadmin\Documents\jic\TPrimeApp\TPrime'
-    cWaves_path=r'C:\Users\labadmin\Documents\jic\C_Waves'
-    
+    ecephys_directory = r'C:\Users\Recording\Documents\GitHub\ecephys_spike_sorting\ecephys_spike_sorting'
+    kilosort_repository = r'C:\Users\Recording\Documents\GitHub\Kilosort' # kilosort 2.5
+    # kilosort_repository = r'C:\Users\Recording\Documents\GitHub\Kilosort2.0'  # kilosort 2
+    npy_matlab_repository = r'C:\Users\Recording\Documents\GitHub\npy-matlab'
+    catGTPath = r'C:\Users\Recording\Documents\Spike_GLX_helpers\CatGT'
+    tPrime_path=r'C:\Users\Recording\Documents\Spike_GLX_helpers\TPrime'
+    cWaves_path=r'C:\Users\Recording\Documents\Spike_GLX_helpers\C_Waves'
+
     # set paths to KS2 master file to run; these should be appropriate for the
     # kilosort repository specified above
     # default inside the ecephys pipeline are:
-    master_file_path = os.path.join(ecephys_directory,'modules','kilosort_helper')
-    master_file_name = 'kilosort2_master_file.m'          
-    # master_file_path = r'D:\ecephys_fork\ecephys_spike_sorting\ecephys_spike_sorting\scripts'
-    # master_file_name = 'KS2ds_tracking_master_file.m' 
-     
+
+    # Kilosort 2.5
+    master_file_path =os.path.join(ecephys_directory,'scripts')
+    master_file_name ='main_KS2_datashift.m'
+
+    # Kilosort 2
+
+    # master_file_path = os.path.join(ecephys_directory,'modules','kilosort_helper')
+    # master_file_name = 'kilosort2_master_file.m'
+
+
     # for config files and kilosort working space
-    kilosort_output_tmp = r'D:\kilosort_datatemp' 
-    
-    
+    kilosort_output_tmp = r'F:\kilosort_datatemp'
+
+
     # derived directory names
     
     modules_directory = os.path.join(ecephys_directory,'modules')
@@ -244,7 +251,7 @@ def createInputJson(output_file,
                 "Th" : '[10 4]',
                 "lam" : 10,
                 "AUCsplit" : 0.9,
-                "minFR" : 1/50.,
+                "minFR" : 0,
                 "momentum" : '[20 400]',
                 "sigmaMask" : 30,
                 "ThPre" : 8,
