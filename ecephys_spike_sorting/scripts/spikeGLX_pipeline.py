@@ -285,5 +285,23 @@ for spec in run_specs:
         
         command = "python -W ignore -m ecephys_spike_sorting.modules." + 'tPrime_helper' + " --input_json " + input_json \
     		          + " --output_json " + output_json
-        subprocess.check_call(command.split(' '))  
-    
+        subprocess.check_call(command.split(' '))
+
+
+# ---------------
+# Move data to server
+# ---------------
+
+if os.path.isdir(target_path) is False:
+    print('Not connected to server')
+else:
+    print('Connected to server')
+    for spec in run_specs:
+        new_folder_name = spec[0] + '_g' + spec[1] + '_t' + spec[2]
+        catGT_dest = os.path.join(output_folder, new_folder_name)
+        server_catGT_dest = os.path.join(target_path, new_folder_name)
+        if os.path.isdir(server_catGT_dest) is True:
+            print('Directory exists already\nDelete it now')
+            shutil.rmtree(server_catGT_dest)
+        print('Compressing data and moving to server')
+        shutil.make_archive(server_catGT_dest,'bztar',catGT_dest)
