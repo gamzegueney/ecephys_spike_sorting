@@ -21,9 +21,6 @@ from create_input_json import createInputJson
 # -----------
 # Input data
 # -----------
-# Name for log file for this pipeline run. Log file will be saved in the
-# output destination directory catGT_dest
-logName = 'SC024_log.csv'
 
 # Raw data directory = npx_directory
 # run_specs = name, gate, trigger and probes to process
@@ -40,14 +37,6 @@ npx_directory = r'E:\NP2.0data\SC024_092319\NP1.0'
 run_specs = [										
 						['SC024_092319_NP1.0_Midbrain', '0', '0,199', '0']
 ]
-
-# ------------------
-# Output destination
-# ------------------
-# Set to an existing directory; all output will be written here.
-# Output will be in the standard SpikeGLX directory structure:
-# run_folder/probe_folder/*.bin
-catGT_dest = r'C:\sampleRate_test\SC024'
 
 # ------------
 # CatGT params
@@ -92,7 +81,19 @@ modules = [
             'quality_metrics'
 			]
 
-json_directory = r'D:\ecephys_fork\json_files'
+# ------------------
+# Output destination
+# ------------------
+# Set to an existing directory; all output will be written here.
+# Output will be in the standard SpikeGLX directory structure:
+# run_folder/probe_folder/*.bin
+output_folder = r'F:\ecephys_output'
+
+json_directory = r'F:\json_files'
+
+# Output directory will be copied on a server location
+# Output on server
+target_path='X:\Roberto\ecephys_output'
 
 # -----------------------
 # -----------------------
@@ -118,17 +119,30 @@ try:
 except OSError:
     pass
 
-# delete any existing log with the current name
-logFullPath = os.path.join(catGT_dest, logName)
-try:
-    os.remove(logFullPath)
-except OSError:
-    pass
-
-# create the log file, write header
-log_from_json.writeHeader(logFullPath)
 
 for spec in run_specs:
+
+    # Name for log file for this pipeline run. Log file will be saved in the
+    # output destination directory catGT_dest
+    logName = '1_log.csv'
+
+    # create new folder with trigger name
+    new_folder_name = spec[0] + '_g' + spec[1] + '_t' + spec[2]
+    if os.path.isdir(os.path.join(output_folder, new_folder_name)) is True:
+        catGT_dest=os.path.join(output_folder, new_folder_name)
+    else:
+        os.mkdir(os.path.join(output_folder, new_folder_name))
+        catGT_dest = os.path.join(output_folder, new_folder_name)
+
+    # delete any existing log with the current name
+    logFullPath = os.path.join(catGT_dest, logName)
+    try:
+        os.remove(logFullPath)
+    except OSError:
+        pass
+
+    # create the log file, write header
+    log_from_json.writeHeader(logFullPath)
 
     session_id = spec[0]
 
