@@ -13,16 +13,16 @@ from ...common.utils import printProgressBar
 
 def metrics_from_file(mean_waveform_fullpath,
                       snr_fullpath,
-                      spike_times, 
-                      spike_clusters, 
-                      templates, 
-                      channel_map, 
-                      bit_volts, 
-                      sample_rate, 
-                      site_spacing, 
-                      params):
-                     
-    
+                      spike_times,
+                      spike_clusters,
+                      templates,
+                      channel_map,
+                      bit_volts,
+                      sample_rate,
+                      site_spacing,
+                      params,output_dir):
+
+
     """
     Load C_waves output and call waveform_metrics for each cluster
     Does not support epochs, since waveforms are already averaged
@@ -81,10 +81,26 @@ def metrics_from_file(mean_waveform_fullpath,
     mean_waveforms = np.load(mean_waveform_fullpath)
     snr_array = np.load(snr_fullpath)
 
+    templates = np.load(os.path.join(output_dir, 'templates.npy'))
+    channel_map = np.load(os.path.join(output_dir, 'channel_map.npy'))
+    channel_map = np.squeeze(channel_map)
+    
+    # read in inverse of whitening matrix
+    w_inv = np.load((os.path.join(output_dir, 'whitening_mat_inv.npy')))
+    nTemplate = templates.shape[0]
 
-    peak_channels = np.squeeze(channel_map[np.argmax(np.max(templates,1) - np.min(templates,1),1)])
-    
-    
+    # initialize peak_channels array
+    peak_channels = np.zeros([nTemplate, ], 'uint32')
+
+    # for each template (nt x nchan), multiply the the transpose (nchan x nt) by inverse of
+    # the whitening matrix (nchan x nchan); get max and min along tthe time axis (1)
+    # to find the peak channel
+    for i in np.arange(0, nTemplate):
+        currT = templates[i, :].T
+        curr_unwh = np.matmul(w_inv, currT)
+        currdiff = np.max(curr_unwh, 1) - np.min(curr_unwh, 1)
+        peak_channels[i] = channel_map[np.argmax(currdiff)]
+
     for cluster_idx, cluster_id in enumerate(cluster_ids):
 
         printProgressBar(cluster_idx+1, total_units)
