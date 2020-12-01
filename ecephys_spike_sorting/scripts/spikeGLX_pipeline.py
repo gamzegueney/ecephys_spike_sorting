@@ -91,9 +91,10 @@ output_folder = r'F:\ecephys_output'
 
 json_directory = r'F:\json_files'
 
+move_to_server = True
 # Output directory will be copied on a server location
-# Output on server
-target_path='X:\Roberto\ecephys_output'
+server_path='X:\Roberto\ecephys_output'
+
 
 # -----------------------
 # -----------------------
@@ -289,8 +290,23 @@ for spec in run_specs:
 
 
 # ---------------
-# Move data to server
+# Move ks output data to server
 # ---------------
+if move_to_server:
+    if os.path.isdir(server_path) is False:
+        print('Not connected to server')
+    else:
+        print('Connected to server')
+        for spec in run_specs:
+            new_folder_name = spec[0] + '_g' + spec[1] + '_t' + spec[2]
+            print(new_folder_name)
+            catGT_dest = os.path.join(output_folder, new_folder_name)
+            server_catGT_dest = os.path.join(server_path, new_folder_name)
+            if os.path.isdir(server_catGT_dest) is True:
+                print('Directory exists already\nDelete it now')
+                shutil.rmtree(server_catGT_dest)
+            print('Compressing data and moving to server')
+            shutil.make_archive(server_catGT_dest,'bztar',catGT_dest)
 
 if os.path.isdir(target_path) is False:
     print('Not connected to server')
