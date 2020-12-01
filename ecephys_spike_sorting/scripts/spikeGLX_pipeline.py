@@ -89,6 +89,11 @@ modules = [
 # run_folder/probe_folder/*.bin
 output_folder = r'F:\ecephys_output'
 
+
+move_binaries = True
+# we need to clean the SSD after each recording, we move the binariess here
+HDD_folder = r"F:\binaries"
+
 json_directory = r'F:\json_files'
 
 move_to_server = True
@@ -308,16 +313,14 @@ if move_to_server:
             print('Compressing data and moving to server')
             shutil.make_archive(server_catGT_dest,'bztar',catGT_dest)
 
-if os.path.isdir(target_path) is False:
-    print('Not connected to server')
-else:
-    print('Connected to server')
+# ---------------
+# Move bins to HDD
+# ---------------
+if move_binaries:
     for spec in run_specs:
-        new_folder_name = spec[0] + '_g' + spec[1] + '_t' + spec[2]
-        catGT_dest = os.path.join(output_folder, new_folder_name)
-        server_catGT_dest = os.path.join(target_path, new_folder_name)
-        if os.path.isdir(server_catGT_dest) is True:
-            print('Directory exists already\nDelete it now')
-            shutil.rmtree(server_catGT_dest)
-        print('Compressing data and moving to server')
-        shutil.make_archive(server_catGT_dest,'bztar',catGT_dest)
+        run_folder_name = spec[0] + '_g' + spec[1]
+        bins_folder = os.path.join(npx_directory, run_folder_name)
+        target = os.path.join(HDD_folder , run_folder_name)
+        if os.path.isdir(target) is False:
+            shutil.move(bins_folder,target)
+            print('Moving binaries out of SSD')
