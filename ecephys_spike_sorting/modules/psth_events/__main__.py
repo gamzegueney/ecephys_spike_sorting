@@ -67,23 +67,27 @@ def get_psth_events(args):
     # the CatGT extracted edge files are a single column with </n>
     # event viewer needs .csv
     edgeTimes = np.zeros((0), dtype='float')
-    with open(ex_path, 'r') as inFile:
-        line = inFile.readline()
-        while line != '':  # The EOF char is an empty string
-            currEdge = float(line)
-            edgeTimes = np.append(edgeTimes, currEdge)
+    # check if there are events
+    if os.stat(ex_path).st_size > 0:
+        with open(ex_path, 'r') as inFile:
             line = inFile.readline()
+            while line != '':  # The EOF char is an empty string
+                currEdge = float(line)
+                edgeTimes = np.append(edgeTimes, currEdge)
+                line = inFile.readline()
 
-    # The output should be saved with the phy output, where the event viewer
-    # plugin can read it
+        # The output should be saved with the phy output, where the event viewer
+        # plugin can read it
 
-    phy_dir = args['directories']['kilosort_output_directory']
-    event_path = os.path.join(phy_dir, 'events.csv')
-    nEvent = len(edgeTimes)
-    with open(event_path, 'w') as outfile:
-        for i in range(0, nEvent-1):
-            outfile.write(f'{edgeTimes[i]:.6f},')
-        outfile.write(f'{edgeTimes[nEvent-1]:.6f}')
+        phy_dir = args['directories']['kilosort_output_directory']
+        event_path = os.path.join(phy_dir, 'events.csv')
+        nEvent = len(edgeTimes)
+        with open(event_path, 'w') as outfile:
+            for i in range(0, nEvent-1):
+                outfile.write(f'{edgeTimes[i]:.6f},')
+            outfile.write(f'{edgeTimes[nEvent-1]:.6f}')
+    else:
+        print("No events detected")
 
     execution_time = time.time() - start
 
